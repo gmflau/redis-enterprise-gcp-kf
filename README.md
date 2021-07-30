@@ -5,15 +5,19 @@ The following is the high level workflow which you will follow:
 1. Clone this repo
 2. Create a GKE cluster for Kf
 3. Install Anthos Service Mesh (ASM)
-4. Create a namespace for this deployment and deploy the Redis Enterprise Operator bundle
-5. Deploy a Redis Enterprise Cluster (REC)
-6. Deploy Ingress Gateway and Create routes for Redis Enterprise Cluster's HTTPS web access
-7. Access Redis Enterprise Cluster's console
-8. Generate a SSL certificate for the Redis Enterprise database
-9. Create a Redis Enterprise database instance with SSL/TLS enabled
-10. Update Ingress Gateway to include Redis Enterprise Database instance
-11. Verify SSL/TLS connection using openssl
-12. Connect to the Redis Enterprise database over SSL/TLS via a Python program
+4. Install Tekton (CI/CD)
+5. Install Kf client on our machine
+6. Install Kf on the GKE cluster
+7. Create a namespace for this deployment and deploy the Redis Enterprise Operator bundle
+8. Deploy a Redis Enterprise Cluster (REC)
+9. Deploy Ingress Gateway and Create routes for Redis Enterprise Cluster's HTTPS web access
+10. Access Redis Enterprise Cluster's console
+11. Create a Redis Enterprise database instance without SSL/TLS enabled
+12. Create user provided service (vcups) in Kf:
+13. Update Ingress Gateway to include Redis Enterprise Database instance
+14. Add a custom port for Redis Enterprise database connection to default ingress gateway
+15. Deploy Spring Music application to Kf
+16. Verify Spring Music app's data is being stored on the Redis Enterprise database
 
 
 
@@ -311,7 +315,7 @@ spec:
 EOF
 ```
   
-#### 12. Create user provided service (vcups) in Kf:
+#### 12. Create user provided service (vcups) in Kf
 ```
 export INGRESS_HOST=$(kubectl -n istio-system \
    get service istio-ingressgateway \
@@ -390,7 +394,7 @@ spec:
 EOF
 ```  
   
-#### 14. Add a custom port for Redis Enterprise database connection to default ingress gateway`
+#### 14. Add a custom port for Redis Enterprise database connection to default ingress gateway
 ```
 kubectl edit svc istio-ingressgateway -n istio-system
 ```
@@ -411,7 +415,7 @@ For example,
 ```
   
 
-#### 15. Deploy Spring Music application to Kf:
+#### 15. Deploy Spring Music application to Kf
 ```
 git clone https://github.com/cloudfoundry-samples/spring-music.git spring-music
 cd spring-music
@@ -438,7 +442,10 @@ Find the Spring Music app's access URL:
 ```
 kf apps
 ```
-
+Access the Spring Music App and you should the following:
+[Spring Music](./img/spring_music.png)
+  
+  
 
 #### 16. Verify Spring Music app's data is being stored on the Redis Enterprise database
 ```
