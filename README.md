@@ -329,6 +329,10 @@ export DB_PASSWORD=$(kubectl get secrets -n redis \
    redb-redis-enterprise-database \
    -o jsonpath="{.data.password}" | base64 --decode)
 
+kf create-space test-space
+
+kf target -s test-space
+
 kf cups redis-${DB_PORT} -p \
 '{"uri":"redis://:'${DB_PASSWORD}'@redis-'${DB_PORT}'.demo.rec.'${INGRESS_HOST}'.nip.io:'${DB_PORT}'"}' -t "redis"
 ```  
