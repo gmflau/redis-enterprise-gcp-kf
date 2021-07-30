@@ -28,7 +28,7 @@ Setup environment variables:
 ```
 export PROJECT_ID=$(gcloud info --format='value(config.project)')
 export CLUSTER_PROJECT_ID=$(gcloud info --format='value(config.project)')
-export CLUSTER_NAME=glau-kf-cluster
+export CLUSTER_NAME=glau-kf-gke-cluster
 export COMPUTE_ZONE=us-central1-a
 export COMPUTE_REGION=us-central1
 export CLUSTER_LOCATION=${COMPUTE_ZONE}
