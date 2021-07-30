@@ -436,7 +436,7 @@ Find the Spring Music app's access URL:
 ```
 kf apps
 ```
-Access the Spring Music App and you should the following:
+Access the Spring Music App and you should the following:  
 ![Spring Music](./img/spring_music.png)
   
   
