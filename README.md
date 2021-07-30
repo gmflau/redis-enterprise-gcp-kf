@@ -464,7 +464,7 @@ Authenticate into the database:
 ```
 > auth <Redis Enterprise database instance's default user's password>
 ```
-Verify the album hash key in the database:
+Verify the **album** key in the database:
 ```
 > keys *
 ```
