@@ -13,7 +13,7 @@ The following is the high level workflow which you will follow:
 9. Deploy Ingress Gateway and Create routes for Redis Enterprise Cluster's HTTPS web access
 10. Access Redis Enterprise Cluster's console
 11. Create a Redis Enterprise database instance without SSL/TLS enabled
-12. Create user provided service (vcups) in Kf:
+12. Create user provided service (vcups) in Kf
 13. Update Ingress Gateway to include Redis Enterprise Database instance
 14. Add a custom port for Redis Enterprise database connection to default ingress gateway
 15. Deploy Spring Music application to Kf
