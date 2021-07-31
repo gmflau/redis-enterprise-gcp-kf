@@ -456,6 +456,7 @@ Access the Spring Music app again and you should see **Proflies:redis & Services
   
 
 #### 16. Verify Spring Music app's data is being stored on the Redis Enterprise database
+This step is optional. It will show you the user provided service for Redis Enterprise database is bound to the Spring Music app.  
 ```
 kf vcap-services spring-music
 ```
