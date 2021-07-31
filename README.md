@@ -420,6 +420,7 @@ cd spring-music
 ```
 Edit manifest.yaml as follows:
 ```
+---
 applications:
 - name: spring-music
   memory: 1G
@@ -428,20 +429,27 @@ applications:
   env:
     BP_AUTO_RECONFIGURATION_ENABLED: false
 ```  
-Bind the user provided service instance for the Redis Enterprise database to the Spring Music app:
-```
-kf bind-service spring-music redis-${DB_PORT}
-```
 Push the Spring Music for deployment:
 ```
 kf push spring-music
 ```
-Find the Spring Music app's access URL:
+Access the Spring Music app using the access URL:
 ```
 kf apps
+```  
+The access URL should look like the following:
 ```
-Access the Spring Music App and you should the following:  
-![Spring Music](./img/spring_music.png)
+Ex. spring-music-16ddfwutxgjte-cd6vnt89i9io.test-space.34.67.154.126.nip.io
+```  
+You should see both Profiles: and Services: are empty as follows:  
+![Spring Music - no service](./img/spring-music-no-svc.png)
+Bind the user provided service instance for the Redis Enterprise database to the Spring Music app:
+```
+kf bind-service spring-music redis-${DB_PORT}
+kf restart spring-music
+```
+Access the Spring Music app again and you should see **Proflies:redis & Services:redis-<db-port-number>** as follows:
+![Spring Music](./img/spring-music.png)
   
   
 
