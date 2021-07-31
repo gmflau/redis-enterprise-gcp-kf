@@ -459,7 +459,9 @@ Access the Spring Music app again and you should see **Proflies:redis & Services
 This step is optional. It will show you the user provided service for Redis Enterprise database is bound to the Spring Music app.  
 ```
 kf vcap-services spring-music
-```
+
+Ex. {"user-provided":[{"instance_name":"redis-17279","name":"redis-17279","label":"user-provided","tags":["redis"],"credentials":{"uri":"redis://:eMd8rYFc@redis-17279.demo.rec.34.67.154.126.nip.io:17279"}}]}
+```  
 Find the default user's password of the Redis Enterprise database instance:
 ```
 kubectl get secrets -n redis redb-redis-enterprise-database \
