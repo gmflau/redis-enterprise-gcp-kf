@@ -88,7 +88,7 @@ For example,
   port: 13813
   protocol: TCP
   targetPort: 13813
-- name: redis-port
+- name: redis-port-2
   nodePort: 31403
   port: 11886
   protocol: TCP
