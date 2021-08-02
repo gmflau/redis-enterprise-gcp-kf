@@ -329,6 +329,10 @@ export DB_PASSWORD=$(kubectl get secrets -n redis \
    redb-redis-enterprise-database \
    -o jsonpath="{.data.password}" | base64 --decode)
 
+kf create-space test-space
+
+kf target -s test-space
+
 kf cups redis-${DB_PORT} -p \
 '{"uri":"redis://:'${DB_PASSWORD}'@redis-'${DB_PORT}'.demo.rec.'${INGRESS_HOST}'.nip.io:'${DB_PORT}'"}' -t "redis"
 ```  
@@ -416,6 +420,7 @@ cd spring-music
 ```
 Edit manifest.yaml as follows:
 ```
+---
 applications:
 - name: spring-music
   memory: 1G
@@ -424,27 +429,39 @@ applications:
   env:
     BP_AUTO_RECONFIGURATION_ENABLED: false
 ```  
-Bind the user provided service instance for the Redis Enterprise database to the Spring Music app:
-```
-kf bind-service spring-music redis-${DB_PORT}
-```
 Push the Spring Music for deployment:
 ```
 kf push spring-music
 ```
-Find the Spring Music app's access URL:
+Access the Spring Music app using the access URL:
 ```
 kf apps
+```  
+The access URL should look like the following:
 ```
-Access the Spring Music App and you should the following:  
-![Spring Music](./img/spring_music.png)
+Ex. spring-music-16ddfwutxgjte-cd6vnt89i9io.test-space.34.67.154.126.nip.io
+```  
+You should see both Profiles: and Services: are empty as follows:  
+  
+![Spring Music - no service](./img/spring-music-no-svc.png)
+Bind the user provided service instance for the Redis Enterprise database to the Spring Music app:
+```
+kf bind-service spring-music redis-${DB_PORT}
+kf restart spring-music
+```
+Access the Spring Music app again and you should see **Proflies:redis & Services:redis-<db-port-number>** as follows:
+  
+![Spring Music](./img/spring-music.png)
   
   
 
 #### 16. Verify Spring Music app's data is being stored on the Redis Enterprise database
+This step is optional. It will show you the user provided service for Redis Enterprise database is bound to the Spring Music app.  
 ```
 kf vcap-services spring-music
-```
+
+Ex. {"user-provided":[{"instance_name":"redis-17279","name":"redis-17279","label":"user-provided","tags":["redis"],"credentials":{"uri":"redis://:eMd8rYFc@redis-17279.demo.rec.34.67.154.126.nip.io:17279"}}]}
+```  
 Find the default user's password of the Redis Enterprise database instance:
 ```
 kubectl get secrets -n redis redb-redis-enterprise-database \
@@ -458,7 +475,7 @@ Authenticate into the database:
 ```
 > auth <Redis Enterprise database instance's default user's password>
 ```
-Verify the **album** key in the database:
+Verify the **album** key is in the database:
 ```
 > keys *
 ```
