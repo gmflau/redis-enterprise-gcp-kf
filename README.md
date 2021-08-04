@@ -303,7 +303,7 @@ Log in using demo@redislabs.com and the password collected above to view the clu
 
   
 #### 11. Create two Redis Enterprise database instances without SSL/TLS enabled
-Deploy a Redis Enterprise database:
+Deploy the first  Redis Enterprise database:
 ```
 kubectl apply -f - <<EOF
 apiVersion: app.redislabs.com/v1alpha1
@@ -315,7 +315,7 @@ spec:
   memorySize: 100MB
 EOF
 ```
-Deploy a Redis Enterprise database:
+Deploy the second  Redis Enterprise database:
 ```
 kubectl apply -f - <<EOF
 apiVersion: app.redislabs.com/v1alpha1
@@ -327,7 +327,7 @@ spec:
   memorySize: 100MB
 EOF
 ```
-
+  
   
 #### 12. Create user provided service (vcups) in Kf
 ```
