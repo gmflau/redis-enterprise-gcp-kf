@@ -388,13 +388,13 @@ spec:
       name: redis-${DB_PORT}
       protocol: TCP
     hosts:
-    - redis-{DB_PORT}.demo.rec.${INGRESS_HOST}.nip.io
+    - redis-${DB_PORT}.demo.rec.${INGRESS_HOST}.nip.io
   - port:
       number: ${DB_PORT_2}
       name: redis-${DB_PORT_2}
       protocol: TCP
     hosts:
-    - redis-{DB_PORT_2}.demo.rec.${INGRESS_HOST}.nip.io
+    - redis-${DB_PORT_2}.demo.rec.${INGRESS_HOST}.nip.io
 EOF
 ```    
 Configure routes for traffic entering via the gateway for the databases:  
