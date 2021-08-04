@@ -194,7 +194,7 @@ kubectl patch configmaps config-defaults \
 -p="{\"data\":{\"spaceContainerRegistry\":\"${CONTAINER_REGISTRY}\",\"spaceClusterDomains\":\"- domain: ${DOMAIN}\"}}"
 ```
 
-Verfiy Kf setup:
+Verfiy Kf setup:  
 It might loop a few times:
 ```
 kf doctor --retries 10
