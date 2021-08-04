@@ -13,8 +13,8 @@ The following is the high level workflow which you will follow:
 9. Deploy Ingress Gateway and Create routes for Redis Enterprise Cluster's HTTPS web access
 10. Access Redis Enterprise Cluster's console
 11. Create a Redis Enterprise database instance without SSL/TLS enabled
-12. Create user provided service (vcups) in Kf
-13. Update Ingress Gateway to include Redis Enterprise Database instance
+12. Create user provided service (vcups) for the first Redis Enterprise database in Kf
+13. Update Ingress Gateway to include Redis Enterprise Database instances
 14. Add a custom port for Redis Enterprise database connection to default ingress gateway
 15. Verify database connections
 16. Deploy Spring Music application to Kf
@@ -466,7 +466,7 @@ It should product an output about the second Redis Enterprise database's meta da
    
 
 
-#### 16.i Deploy Spring Music application to Kf
+#### 16. Deploy Spring Music application to Kf
 ```
 git clone https://github.com/cloudfoundry-samples/spring-music.git spring-music
 cd spring-music
