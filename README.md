@@ -195,7 +195,6 @@ kubectl patch configmaps config-defaults \
 ```
 
 Verfiy Kf setup:  
-It might loop a few times:
 ```
 kf doctor --retries 10
 ```  
