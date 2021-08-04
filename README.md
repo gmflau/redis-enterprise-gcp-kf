@@ -434,14 +434,14 @@ kubectl edit svc istio-ingressgateway -n istio-system
 ```
 Add the following next to other port definitions:
 ```
-- name: redis-port
+- name: redis-db-port
   nodePort: <node-port-of-your-choice>
   port: ${INGRESS_GATEWAY_DB_PORT}
   protocol: TCP
   targetPort: ${INGRESS_GATEWAY_DB_PORT}
 
 For example, if INGRESS_GATEWAY_DB_PORT=10000 :
-- name: redis-port
+- name: redis-db-port
   nodePort: 31402
   port: 10000
   protocol: TCP
