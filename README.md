@@ -16,8 +16,9 @@ The following is the high level workflow which you will follow:
 12. Create user provided service (vcups) in Kf
 13. Update Ingress Gateway to include Redis Enterprise Database instance
 14. Add a custom port for Redis Enterprise database connection to default ingress gateway
-15. Deploy Spring Music application to Kf
-16. Verify Spring Music app's data is being stored on the Redis Enterprise database
+15. Verify database connections
+16. Deploy Spring Music application to Kf
+17. Verify Spring Music app's data is being stored on the Redis Enterprise database
 
 
 
@@ -301,7 +302,7 @@ https://rec-ui.34.83.116.191.nip.io:443
 Log in using demo@redislabs.com and the password collected above to view the cluster information in CM.
 
   
-#### 11. Create a Redis Enterprise database instance without SSL/TLS enabled
+#### 11. Create two Redis Enterprise database instances without SSL/TLS enabled
 Deploy a Redis Enterprise database:
 ```
 kubectl apply -f - <<EOF
@@ -314,6 +315,19 @@ spec:
   memorySize: 100MB
 EOF
 ```
+Deploy a Redis Enterprise database:
+```
+kubectl apply -f - <<EOF
+apiVersion: app.redislabs.com/v1alpha1
+kind: RedisEnterpriseDatabase
+namespace: redis
+metadata:
+  name: redis-enterprise-database-2
+spec:
+  memorySize: 100MB
+EOF
+```
+
   
 #### 12. Create user provided service (vcups) in Kf
 ```
@@ -321,12 +335,22 @@ export INGRESS_HOST=$(kubectl -n istio-system \
    get service istio-ingressgateway \
    -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
+export INGRESS_GATEWAY_DB_PORT=10000
+
 export DB_PORT=$(kubectl get secrets -n redis \
    redb-redis-enterprise-database \
    -o jsonpath="{.data.port}" | base64 --decode)
 
 export DB_PASSWORD=$(kubectl get secrets -n redis \
    redb-redis-enterprise-database \
+   -o jsonpath="{.data.password}" | base64 --decode)
+
+export DB_PORT_2=$(kubectl get secrets -n redis \
+   redb-redis-enterprise-database-2 \
+   -o jsonpath="{.data.port}" | base64 --decode)
+
+export DB_PASSWORD_2=$(kubectl get secrets -n redis \
+   redb-redis-enterprise-database-2 \
    -o jsonpath="{.data.password}" | base64 --decode)
 
 kf create-space test-space
@@ -341,7 +365,7 @@ Confirm service instance creation:
 kf services
 ```  
   
-#### 13. Update Ingress Gateway to include Redis Enterprise Database instance
+#### 13. Update Ingress Gateway to include Redis Enterprise Database instances
 Define gateway for TCP access:
 ```
 kubectl apply -f - <<EOF
@@ -362,14 +386,14 @@ spec:
     hosts:
     - rec-ui.${INGRESS_HOST}.nip.io
   - port:
-      number: ${DB_PORT}
-      name: redis-${DB_PORT}
+      number: ${INGRESS_GATEWAY_DB_PORT}
+      name: redis-db-port
       protocol: TCP
     hosts:
-    - redis-${DB_PORT}.demo.rec.${INGRESS_HOST}.nip.io
+    - "*.demo.rec.${INGRESS_HOST}.nip.io"
 EOF
 ```    
-Configure routes for traffic entering via the gateway for the database:  
+Configure routes for traffic entering via the gateway for the databases:  
 ```
 kubectl apply -f - <<EOF
 apiVersion: networking.istio.io/v1alpha3
@@ -378,17 +402,29 @@ metadata:
   name: redis-bdbs
 spec:
   hosts:
-  - "*.demo.rec.${INGRESS_HOST}.nip.io"
+  - redis-${DB_PORT}.demo.rec.${INGRESS_HOST}.nip.io
   gateways:
   - redis-gateway
   tcp:
   - match:
-    - port: ${DB_PORT}
+    - port: ${INGRESS_GATEWAY_DB_PORT}
     route:
     - destination:
         host: redis-enterprise-database
         port:
           number: ${DB_PORT}
+  hosts:
+  - redis-${DB_PORT_2}.demo.rec.${INGRESS_HOST}.nip.io
+  gateways:
+  - redis-gateway
+  tcp:
+  - match:
+    - port: ${INGRESS_GATEWAY_DB_PORT}
+    route:
+    - destination:
+        host: redis-enterprise-database-2
+        port:
+          number: ${DB_PORT_2}
 EOF
 ```  
   
@@ -400,20 +436,37 @@ Add the following next to other port definitions:
 ```
 - name: redis-port
   nodePort: <node-port-of-your-choice>
-  port: <replace with ${DB_PORT}>
+  port: ${INGRESS_GATEWAY_DB_PORT}
   protocol: TCP
-  targetPort: <replace with ${DB_PORT}>
+  targetPort: ${INGRESS_GATEWAY_DB_PORT}
 
-For example,
+For example, if INGRESS_GATEWAY_DB_PORT=10000 :
 - name: redis-port
   nodePort: 31402
-  port: 13813
+  port: 10000
   protocol: TCP
-  targetPort: 13813
+  targetPort: 10000
 ```
-  
 
-#### 15. Deploy Spring Music application to Kf
+  
+#### 15. Verify database connections
+Verify the first database connection:
+```
+python test.py ${INGRESS_HOST} ${DB_PORT} ${INGRESS_GATEWAY_DB_PORT} ${DB_PASSWORD}
+```
+It should product an output about the first Redis Enterprise database's meta data like the followings:
+![test result](./img/test-py.png)
+   
+Verify the second database connection:
+```
+python test.py ${INGRESS_HOST} ${DB_PORT_2} ${INGRESS_GATEWAY_DB_PORT} ${DB_PASSWORD_2}
+```
+It should product an output about the second Redis Enterprise database's meta data like the followings:
+![test result](./img/test-py.png)
+   
+
+
+#### 16.i Deploy Spring Music application to Kf
 ```
 git clone https://github.com/cloudfoundry-samples/spring-music.git spring-music
 cd spring-music
@@ -455,7 +508,7 @@ Access the Spring Music app again and you should see **Proflies:redis & Services
   
   
 
-#### 16. Verify Spring Music app's data is being stored on the Redis Enterprise database
+#### 17. Verify Spring Music app's data is being stored on the Redis Enterprise database
 This step is optional. It will show you the user provided service for Redis Enterprise database is bound to the Spring Music app.  
 ```
 kf vcap-services spring-music
