@@ -24,8 +24,8 @@ The following is the high level workflow which you will follow:
 
 #### 1. Clone this repo
 ```
-git clone https://github.com/Redislabs-Solution-Architects/redis-enterprise-cloud-gcp
-cd kf/access-via-vcups
+git clone https://github.com/gmflau/redis-enterprise-cloud-kf
+cd redis-enterprise-cloud-kf
 ```
 
 #### 2. Create a GKE cluster for Kf
