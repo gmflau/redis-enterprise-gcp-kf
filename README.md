@@ -444,7 +444,7 @@ Add the following next to other port definitions:
   protocol: TCP
   targetPort: ${DB_PORT_2}
 
-For example, if INGRESS_GATEWAY_DB_PORT=10000 :
+For example:
 - name: redis-db-port-1
   nodePort: 31402
   port: 17995
@@ -461,14 +461,14 @@ For example, if INGRESS_GATEWAY_DB_PORT=10000 :
 #### 15. Verify database connections
 Verify the first database connection:
 ```
-python test.py ${INGRESS_HOST} ${DB_PORT} ${INGRESS_GATEWAY_DB_PORT} ${DB_PASSWORD}
+python test.py ${INGRESS_HOST} ${DB_PORT} ${DB_PASSWORD}
 ```
 It should product an output about the first Redis Enterprise database's meta data like the followings:
 ![test result](./img/test-py.png)
    
 Verify the second database connection:
 ```
-python test.py ${INGRESS_HOST} ${DB_PORT_2} ${INGRESS_GATEWAY_DB_PORT} ${DB_PASSWORD_2}
+python test.py ${INGRESS_HOST} ${DB_PORT_2} ${DB_PASSWORD_2}
 ```
 It should product an output about the second Redis Enterprise database's meta data like the followings:
 ![test result](./img/test-py.png)
