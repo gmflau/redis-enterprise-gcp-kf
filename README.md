@@ -384,11 +384,17 @@ spec:
     hosts:
     - rec-ui.${INGRESS_HOST}.nip.io
   - port:
-      number: ${INGRESS_GATEWAY_DB_PORT}
-      name: redis-db-port
+      number: ${DB_PORT}
+      name: redis-${DB_PORT}
       protocol: TCP
     hosts:
-    - "*.demo.rec.${INGRESS_HOST}.nip.io"
+    - redis-{DB_PORT}.demo.rec.${INGRESS_HOST}.nip.io
+  - port:
+      number: ${DB_PORT_2}
+      name: redis-${DB_PORT_2}
+      protocol: TCP
+    hosts:
+    - redis-{DB_PORT_2}.demo.rec.${INGRESS_HOST}.nip.io
 EOF
 ```    
 Configure routes for traffic entering via the gateway for the databases:  
@@ -400,7 +406,7 @@ metadata:
   name: redis-bdbs
 spec:
   hosts:
-  - redis-${DB_PORT}.demo.rec.${INGRESS_HOST}.nip.io
+  - "*.demo.rec.${INGRESS_HOST}.nip.io"
   gateways:
   - redis-gateway
   tcp:
@@ -411,11 +417,6 @@ spec:
         host: redis-enterprise-database
         port:
           number: ${DB_PORT}
-  hosts:
-  - redis-${DB_PORT_2}.demo.rec.${INGRESS_HOST}.nip.io
-  gateways:
-  - redis-gateway
-  tcp:
   - match:
     - port: ${DB_PORT_2}
     route:
