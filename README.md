@@ -268,7 +268,7 @@ kubectl apply -f - <<EOF
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: rec
+  name: redis-enterprise-cluster
 spec:
   hosts:
   - rec-ui.${INGRESS_HOST}.nip.io
@@ -334,8 +334,6 @@ EOF
 export INGRESS_HOST=$(kubectl -n istio-system \
    get service istio-ingressgateway \
    -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-
-export INGRESS_GATEWAY_DB_PORT=10000
 
 export DB_PORT=$(kubectl get secrets -n redis \
    redb-redis-enterprise-database \
@@ -407,7 +405,7 @@ spec:
   - redis-gateway
   tcp:
   - match:
-    - port: ${INGRESS_GATEWAY_DB_PORT}
+    - port: ${DB_PORT}
     route:
     - destination:
         host: redis-enterprise-database
@@ -419,7 +417,7 @@ spec:
   - redis-gateway
   tcp:
   - match:
-    - port: ${INGRESS_GATEWAY_DB_PORT}
+    - port: ${DB_PORT_2}
     route:
     - destination:
         host: redis-enterprise-database-2
@@ -434,18 +432,28 @@ kubectl edit svc istio-ingressgateway -n istio-system
 ```
 Add the following next to other port definitions:
 ```
-- name: redis-db-port
-  nodePort: <node-port-of-your-choice>
-  port: ${INGRESS_GATEWAY_DB_PORT}
+- name: redis-db-port-1
+  nodePort: <unique-node-port-of-your-choice>
+  port: ${DB_PORT}
   protocol: TCP
-  targetPort: ${INGRESS_GATEWAY_DB_PORT}
+  targetPort: ${DB_PORT}
+- name: redis-db-port-2
+  nodePort: <unique-node-port-of-your-choice>
+  port: ${DB_PORT_2}
+  protocol: TCP
+  targetPort: ${DB_PORT_2}
 
 For example, if INGRESS_GATEWAY_DB_PORT=10000 :
-- name: redis-db-port
+- name: redis-db-port-1
   nodePort: 31402
-  port: 10000
+  port: 17995
   protocol: TCP
-  targetPort: 10000
+  targetPort: 17995
+- name: redis-db-port-2
+  nodePort: 31403
+  port: 16457
+  protocol: TCP
+  targetPort: 16457
 ```
 
   
